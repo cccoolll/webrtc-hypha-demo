@@ -191,13 +191,6 @@
                                     playsinline="true" 
                                     class="w-full h-full object-cover rounded-b-xl"
                                 ></video>
-                                
-                                <!-- Overlay when no stream -->
-                                <div id="no-stream-overlay" class="absolute inset-0 flex flex-col items-center justify-center text-white bg-gray-800 bg-opacity-75 rounded-b-xl">
-                                    <i class="fas fa-video-slash text-6xl mb-4 opacity-50"></i>
-                                    <p class="text-xl font-medium mb-2">No Stream Active</p>
-                                    <p class="text-gray-300">Login and start streaming to view content</p>
-                                </div>
                             </div>
                             
                             <!-- Floating Microscope Controls -->
@@ -335,12 +328,12 @@
                     statusIndicator.classList.remove('bg-red-500');
                     statusIndicator.classList.add('bg-green-500');
                     statusText.textContent = 'Live';
-                    noStreamOverlay.classList.add('hidden');
+                    if (noStreamOverlay) noStreamOverlay.classList.add('hidden');
                 } else {
                     statusIndicator.classList.remove('bg-green-500');
                     statusIndicator.classList.add('bg-red-500');
                     statusText.textContent = 'Offline';
-                    noStreamOverlay.classList.remove('hidden');
+                    if (noStreamOverlay) noStreamOverlay.classList.remove('hidden');
                 }
             },
 
