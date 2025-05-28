@@ -119,7 +119,7 @@
                             <input 
                                 id="service-id" 
                                 type="text" 
-                                value="aiortc-demo" 
+                                value="webrtc-stream-simu-microscope-squid-reef-local" 
                                 class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-colors"
                                 placeholder="Enter service ID"
                             />
@@ -426,7 +426,8 @@
                         "name": "js-client", 
                         "server_url": "https://hypha.aicell.io", 
                         "method_timeout": 60,
-                        "token": authToken
+                        "token": authToken,
+                        "workspace": "squid-control"
                     });
 
                     this.isLoggedIn = true;
@@ -505,7 +506,18 @@
                 }
                 
                 const hostCanvas = document.createElement('canvas');
-                const service_id = document.getElementById('service-id').value;
+                const webrtc_service_id = document.getElementById('service-id').value;
+
+                // Parse the main microscope service ID from the WebRTC service ID
+                // Expected format: webrtc-stream-{simu/real}-{actual_microscope_id}
+                let main_microscope_service_id = "microscope-control"; // Default fallback
+                const parts = webrtc_service_id.split('-');
+                if (parts.length > 3 && parts[0] === "webrtc" && parts[1] === "stream") {
+                    main_microscope_service_id = parts.slice(3).join('-');
+                    console.log("Parsed main microscope service ID:", main_microscope_service_id);
+                } else {
+                    console.warn("Could not parse main microscope service ID from WebRTC ID:", webrtc_service_id, "Using default 'microscope-control'. Ensure the WebRTC service ID format is: webrtc-stream-{simu/real}-{your-microscope-id}");
+                }
 
                 // Fetch ICE servers
                 let iceServers = null;
@@ -543,7 +555,7 @@
                 
                 pc = await hyphaWebsocketClient.getRTCService(
                     server,
-                    service_id,
+                    webrtc_service_id,
                     {
                         on_init,
                         ice_servers: iceServers
@@ -551,8 +563,8 @@
                 );
                 // now we can access the services using the webrtc peer-to-peer connection
                 // the rpc calls will go through webrtc instead of the websocket
-                const mc = await pc.getService("microscope-control");
-                console.log('==========microscope control=========>', mc)
+                const mc = await pc.getService(main_microscope_service_id);
+                console.log('==========microscope control service fetched with ID:', main_microscope_service_id, ' =========>', mc)
                 // expose it to window so the button click can call it
                 window.microscopeControl = mc;
                 
