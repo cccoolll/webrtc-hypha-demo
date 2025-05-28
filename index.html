@@ -602,6 +602,13 @@
                         break;
                 }
             });
+
+            // Add event listener to disconnect WebRTC on page unload
+            window.addEventListener('beforeunload', function() {
+                if (window.methods.liveRunning) {
+                    window.methods.stop();
+                }
+            });
         });
     </script>
 </body>
